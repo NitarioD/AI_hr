@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Role interview questions</title>
+    <meta
+      name="description"
+      content="Enter a job title to generate three thoughtful interview questions via Gemini."
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <!--
+      Single-page assignment UI.
+      Primary example title is prefilled per brief (Customer Success Manager).
+    -->
+    <main>
+      <h1>Interview questions by role</h1>
+      <p class="lede">
+        Enter a <strong>generic job title</strong> (no personal data). You will get
+        <strong>three</strong> tailored interview questions.
+      </p>
+
+      <section class="card" aria-labelledby="form-heading">
+        <h2 id="form-heading" class="visually-hidden">Job title form</h2>
+        <form id="job-form" novalidate>
+          <label for="job-title">Job title</label>
+          <input
+            id="job-title"
+            name="jobTitle"
+            type="text"
+            maxlength="120"
+            autocomplete="organization-title"
+            placeholder="e.g. Customer Success Manager"
+            value="Customer Success Manager"
+            required
+          />
+          <p class="hint">Only the title is sent to the model — no names or resumes.</p>
+
+          <div class="row">
+            <button type="submit" id="submit-btn">Generate questions</button>
+            <div class="loading" id="loading" aria-live="polite">
+              <span class="spinner" aria-hidden="true"></span>
+              <span>Asking the model…</span>
+            </div>
+          </div>
+        </form>
+
+        <div class="error" id="error" role="alert"></div>
+
+        <div class="output" id="output" hidden aria-live="polite" aria-atomic="true">
+          <h2>Suggested questions</h2>
+          <ol class="questions" id="question-list"></ol>
+        </div>
+      </section>
+
+      <footer>
+        Built for application screen — Gemini via serverless API (key stays on server).
+      </footer>
+    </main>
+
+    <style>
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+    </style>
+    <script src="/js/app.js" defer></script>
+  </body>
+</html>
