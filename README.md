@@ -12,13 +12,21 @@ Short take-home: enter a **generic job title** → get **three** interview quest
 | `api/generate.js` | Serverless proxy to **Google Gemini** so your **API key never ships to the browser**. |
 | `vercel.json` | Small security headers; optional hardening. |
 
-**Provider / model:** Google **Gemini** via REST. Default model is **`gemini-1.5-flash`** (set **`GEMINI_MODEL`** to e.g. `gemini-2.5-flash` when your key has quota). Free-tier limits vary by model and region; JSON mode keeps parsing reliable.
+**Provider / model:** Google **Gemini** via REST. If **`GEMINI_MODEL`** is unset, the server tries **`gemini-2.5-flash`** → **`gemini-2.5-flash-lite`** → **`gemini-2.0-flash`** until one works (older ids like **`gemini-1.5-flash`** are often removed from `v1beta` for new keys). Set **`GEMINI_MODEL`** to pin one id from ListModels. JSON mode keeps parsing reliable.
 
 **Prompt strategy:** A fixed **system instruction** encodes rules (no PII, exactly three questions, JSON shape). The **user message** is only `Job title: …` so you stay aligned with the assignment’s privacy note.
 
-### Gemini quota errors (`limit: 0`, `RESOURCE_EXHAUSTED`)
+### Gemini errors (not found, quota, `limit: 0`)
 
-Google may assign **no free requests** to a given model on your key (common with `gemini-2.0-flash`). **Fix:** in Vercel → Environment Variables, set **`GEMINI_MODEL`** to another Flash model (`gemini-1.5-flash`, `gemini-2.5-flash`, etc.), redeploy, and retry. If the error says “retry in Ns”, wait that long (rate limit burst).
+**“Model … not found / not supported”:** your key does not expose that id on `v1beta`. Leave **`GEMINI_MODEL` unset** so fallbacks run, or list valid ids:
+
+```bash
+curl "https://generativelanguage.googleapis.com/v1beta/models?key=YOUR_GEMINI_API_KEY"
+```
+
+Use a model whose metadata includes **`generateContent`** in supported methods; set **`GEMINI_MODEL`** to the short name (the part after `models/`).
+
+**Quota / `RESOURCE_EXHAUSTED` / free tier `limit: 0`:** try another model, wait for a “retry in Ns” window, or enable billing in Google AI Studio for the project tied to your API key.
 
 ## Run locally
 
@@ -31,7 +39,7 @@ Google may assign **no free requests** to a given model on your key (common with
 
 1. Push this folder to a **new GitHub repository** (private is fine if the recruiter accepts it; many prefer public for easy review).
 2. Import the repo in [Vercel](https://vercel.com) → New Project → select the repo.
-3. Under **Environment Variables**, add `GEMINI_API_KEY` with your key (Production + Preview). Optionally add **`GEMINI_MODEL`** (e.g. `gemini-1.5-flash`) if the default model hits quota errors.
+3. Under **Environment Variables**, add `GEMINI_API_KEY` with your key (Production + Preview). Optionally add **`GEMINI_MODEL`** to pin one model id from the ListModels response if fallbacks are not enough.
 4. Deploy. Copy the **production URL** for your application email.
 
 **Checklist before you submit:** Open the live site, submit the default title, confirm three questions appear, try a bad network tab once to see error handling.
@@ -62,7 +70,7 @@ Open repo in the editor or GitHub; hit these in order:
 3. **`api/generate.js`** — **this is the differentiator:** explain you did **not** put the key in the frontend; Vercel holds `GEMINI_API_KEY`. Mention **JSON mode** and the **exact JSON shape** you asked the model for.
 4. **Prompt** — scroll to `SYSTEM_INSTRUCTION` in `api/generate.js` and read the **rules** you gave the model (three questions, thoughtful, no personal data).
 
-**Answer explicitly:** “I chose **Google Gemini**; the server uses **`GEMINI_MODEL`** (default **`gemini-1.5-flash`**) so we can swap models when free-tier quotas change, plus JSON mode for reliable parsing …”
+**Answer explicitly:** “I chose **Google Gemini**; the server cycles a small **model fallback list** when `GEMINI_MODEL` is unset, because Google changes which model ids exist and which have free-tier quota, plus JSON mode for reliable parsing …”
 
 ### Minute 5–7 — Required reflection questions (answer out loud)
 
