@@ -1,0 +1,13 @@
+{
+  "name": "interview-questions-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Step 1 screen: job title → 3 AI-generated interview questions (Gemini via serverless API).",
+  "scripts": {
+    "dev": "vercel dev",
+    "lint": "node -c api/generate.js && node -c js/app.js"
+  },
+  "devDependencies": {
+    "vercel": "^39.0.0"
+  }
+}

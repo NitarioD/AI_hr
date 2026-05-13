@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Local env (never commit real API keys)
+.env
+.env.local
+.vercel
+
+# OS / editor
+.DS_Store
+Thumbs.db
